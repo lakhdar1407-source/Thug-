@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>شد الحبل - لوحة المعلم</title>
+  <style>
+    :root {
+      --blue: #2d8cff;
+      --red: #ff4f6d;
+      --dark: #14304a;
+      --line: #dce7fb;
+      --panel: #f7fbff;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Tajawal", "Segoe UI", Tahoma, sans-serif;
+      background: linear-gradient(180deg, #f8fbff 0%, #e8f2ff 100%);
+      color: var(--dark);
+      min-height: 100vh;
+      padding: 14px;
+    }
+    .layout {
+      display: grid;
+      gap: 14px;
+      grid-template-columns: minmax(300px, 360px) 1fr;
+      max-width: 1500px;
+      margin: 0 auto;
+    }
+    .panel {
+      background: #fff;
+      border: 2px solid var(--line);
+      border-radius: 16px;
+      box-shadow: 0 12px 32px rgba(36, 65, 110, 0.15);
+    }
+    .teacher {
+      padding: 14px;
+      background: var(--panel);
+    }
+    .teacher h2 { margin: 4px 0 10px; }
+    .teacher p { margin: 0 0 10px; font-size: 0.93rem; }
+    .field { margin-bottom: 10px; }
+    .field label { font-weight: 700; display: block; margin-bottom: 6px; }
+    textarea, select {
+      width: 100%;
+      border: 2px solid #cfe0ff;
+      border-radius: 10px;
+      padding: 8px;
+      font-family: inherit;
+      font-size: 0.95rem;
+      background: #fff;
+    }
+    textarea { min-height: 120px; resize: vertical; }
+    .teacher-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+
+    button {
+      border: 0;
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-size: 0.93rem;
+      font-weight: 700;
+      cursor: pointer;
+      color: #fff;
+      background: var(--blue);
+    }
+    button.secondary { background: #7087aa; }
+
+    .app {
+      padding: 12px;
+      display: grid;
+      grid-template-columns: 1fr 1.3fr 1fr;
+      gap: 12px;
+      min-height: 720px;
+    }
+    .team-panel, .center-stage {
+      border: 2px solid var(--line);
+      border-radius: 14px;
+      background: #fff;
+      overflow: hidden;
+    }
+    .team-panel { display: grid; grid-template-rows: auto auto auto auto 1fr auto auto; }
+    .header {
+      color: #fff;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 12px;
+      font-weight: 800;
+    }
+    .team-a .header { background: linear-gradient(120deg, #2f90ff, #4ec9ff); }
+    .team-b .header { background: linear-gradient(120deg, #ff4f6d, #ff8370); }
+    .pill { background: rgba(255,255,255,.25); border-radius: 999px; padding: 4px 10px; }
+
+    .box {
+      margin: 10px;
+      background: #eef5ff;
+      border-radius: 10px;
+      padding: 10px;
+      text-align: center;
+      font-weight: 700;
+      line-height: 1.6;
+    }
+    .answer {
+      margin: 0 10px 10px;
+      border: 2px dashed #aec4e8;
+      border-radius: 10px;
+      min-height: 50px;
+      display: grid;
+      place-items: center;
+      font-size: 1.35rem;
+      font-weight: 800;
+    }
+    .keyboard { margin: 0 10px 10px; display: grid; gap: 7px; grid-template-columns: repeat(5,1fr); }
+    .key { background: #fff; color: #123655; border: 2px solid #d8e5ff; font-size: 1.2rem; font-weight: 800; padding: 8px 0; }
+
+    .team-controls { margin: 0 10px 10px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 7px; }
+    .team-b .team-controls button { background: #ff607d; }
+    .team-msg { min-height: 24px; margin: 0 10px 10px; text-align: center; font-weight: 700; color: #1d588d; }
+
+    .center-stage { display: grid; grid-template-rows: auto auto auto 1fr auto auto; }
+    .title { margin: 0; text-align: center; padding: 12px; border-bottom: 2px solid #e1ecff; }
+    .status { display: flex; justify-content: space-around; padding: 10px; background: #f0f6ff; font-weight: 700; }
+    .center-info { text-align: center; padding: 8px; border-top: 2px solid #e1ecff; border-bottom: 2px solid #e1ecff; background: #f9fcff; }
+
+    .battlefield { position: relative; display: grid; place-items: center; padding: 14px; }
+    .mid { position: absolute; top: 8%; bottom: 8%; border-left: 3px dashed #91abd0; }
+    .rope-zone { width: min(62vw, 760px); max-width: 100%; height: 110px; position: relative; display: flex; align-items: center; }
+    .rope { width: 100%; height: 10px; border-radius: 999px; background: repeating-linear-gradient(90deg, #4e4e4e 0 10px, #8a8a8a 10px 20px); }
+    .flag { position: absolute; width: 20px; height: 40px; background: #ff375f; clip-path: polygon(0 0, 100% 25%, 0 50%, 45% 50%, 45% 100%, 0 100%); transform: translateX(var(--offset)); transition: .3s ease; }
+
+    .global-msg { min-height: 28px; text-align: center; font-weight: 700; padding: 6px; }
+    .round-controls { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px; padding: 10px; background: #f0f6ff; border-top: 2px solid #e1ecff; }
+
+    @media (max-width: 1200px) {
+      .layout { grid-template-columns: 1fr; }
+      .app { grid-template-columns: 1fr; min-height: auto; }
+    }
+  </style>
+</head>
+<body>
+  <main class="layout">
+    <aside class="panel teacher">
+      <h2>لوحة المعلم</h2>
+      <p>اضبط كلمات اللعبة ومجموعات الحروف ثم اضغط "تطبيق".</p>
+
+      <div class="field">
+        <label for="wordsInput">قائمة الكلمات (صيغة: المعنى|الكلمة)</label>
+        <textarea id="wordsInput">عكس كلمة كبير|صغير
+شيء نكتب به|قلم
+مكان نتعلم فيه|مدرسة
+لون السماء|أزرق
+كوكب نعيش عليه|الأرض
+وسيلة نقل لها أربع عجلات|سيارة
+شيء نشربه|ماء
+ما نراه في الليل|قمر
+مكان للطهي|مطبخ
+صوت يصدره القط|مواء</textarea>
+      </div>
+
+      <div class="field">
+        <label for="lettersInput">مجموعات الحروف المستخدمة (كل سطر 9 أو 10 أحرف مفصولة بمسافة)</label>
+        <textarea id="lettersInput">ص غ ي ر ل م ت ب ن
+ق ل م د س ر ة ك و ي
+م د ر س ة ق ل ت ن ب
+أ ز ر ق م ن ب ل ي س
+ا ل أ ر ض م ق ب ت ن</textarea>
+      </div>
+
+      <div class="field">
+        <label for="lettersMode">وضع مجموعات الحروف</label>
+        <select id="lettersMode">
+          <option value="manual">من لوحة المعلم (يدوي)</option>
+          <option value="auto">توليد تلقائي 9-10 أحرف</option>
+        </select>
+      </div>
+
+      <div class="teacher-controls">
+        <button id="applyConfig">تطبيق الإعدادات</button>
+        <button id="resetConfig" class="secondary">استعادة الافتراضي</button>
+      </div>
+      <p id="teacherMsg"></p>
+    </aside>
+
+    <section class="panel app">
+      <section class="team-panel team-a">
+        <header class="header"><span>الفريق الأزرق</span><span class="pill" id="scoreA">0</span></header>
+        <div class="box" id="promptA">اضغط "ابدأ الجولة"</div>
+        <div class="box" id="lettersA">حروف الجولة: -</div>
+        <div class="answer" id="answerA">—</div>
+        <div class="keyboard" id="keyboardA"></div>
+        <div class="team-controls">
+          <button data-team="A" data-action="submit">تأكيد</button>
+          <button data-team="A" data-action="back">حذف</button>
+          <button data-team="A" data-action="clear">مسح</button>
+        </div>
+        <div class="team-msg" id="teamMsgA"></div>
+      </section>
+
+      <section class="center-stage">
+        <h1 class="title">شدّ الحبل: إملاء عربي</h1>
+        <div class="status"><span id="roundLabel">الجولة 1 / 10</span><span id="timer">⏳ 25</span></div>
+        <div class="center-info" id="activeGroup">مجموعة الحروف الحالية: -</div>
+        <div class="battlefield">
+          <div class="mid"></div>
+          <div class="rope-zone"><div class="rope"></div><div class="flag" id="flag"></div></div>
+        </div>
+        <div class="global-msg" id="globalMsg"></div>
+        <div class="round-controls">
+          <button id="startRound">ابدأ الجولة</button>
+          <button id="nextRound" class="secondary">الجولة التالية</button>
+          <button id="resetGame" class="secondary">إعادة اللعبة</button>
+        </div>
+      </section>
+
+      <section class="team-panel team-b">
+        <header class="header"><span>الفريق الأحمر</span><span class="pill" id="scoreB">0</span></header>
+        <div class="box" id="promptB">اكتب الكلمة الصحيحة من المعنى</div>
+        <div class="box" id="lettersB">حروف الجولة: -</div>
+        <div class="answer" id="answerB">—</div>
+        <div class="keyboard" id="keyboardB"></div>
+        <div class="team-controls">
+          <button data-team="B" data-action="submit">تأكيد</button>
+          <button data-team="B" data-action="back">حذف</button>
+          <button data-team="B" data-action="clear">مسح</button>
+        </div>
+        <div class="team-msg" id="teamMsgB"></div>
+      </section>
+    </section>
+  </main>
+
+  <script>
+    const arabicAlphabet = ["ا","ب","ت","ث","ج","ح","خ","د","ذ","ر","ز","س","ش","ص","ض","ط","ظ","ع","غ","ف","ق","ك","ل","م","ن","ه","و","ي","ة","أ","إ","ء","ى"];
+    const defaults = {
+      wordsText: document.getElementById("wordsInput").value,
+      lettersText: document.getElementById("lettersInput").value
+    };
+
+    const state = {
+      rounds: [],
+      manualGroups: [],
+      lettersMode: "manual",
+      round: 1,
+      scoreA: 0,
+      scoreB: 0,
+      ropeOffset: 0,
+      timer: 25,
+      timerId: null,
+      roundActive: false,
+      currentWord: "",
+      currentClue: "",
+      letters: [],
+      answerA: "",
+      answerB: ""
+    };
+
+    const el = {
+      scoreA: document.getElementById("scoreA"),
+      scoreB: document.getElementById("scoreB"),
+      roundLabel: document.getElementById("roundLabel"),
+      timer: document.getElementById("timer"),
+      flag: document.getElementById("flag"),
+      globalMsg: document.getElementById("globalMsg"),
+      promptA: document.getElementById("promptA"),
+      promptB: document.getElementById("promptB"),
+      lettersA: document.getElementById("lettersA"),
+      lettersB: document.getElementById("lettersB"),
+      answerA: document.getElementById("answerA"),
+      answerB: document.getElementById("answerB"),
+      keyboardA: document.getElementById("keyboardA"),
+      keyboardB: document.getElementById("keyboardB"),
+      teamMsgA: document.getElementById("teamMsgA"),
+      teamMsgB: document.getElementById("teamMsgB"),
+      activeGroup: document.getElementById("activeGroup"),
+      teacherMsg: document.getElementById("teacherMsg"),
+      wordsInput: document.getElementById("wordsInput"),
+      lettersInput: document.getElementById("lettersInput"),
+      lettersMode: document.getElementById("lettersMode"),
+      startRound: document.getElementById("startRound"),
+      nextRound: document.getElementById("nextRound")
+    };
+
+    const normalize = (word) => word.replace(/\s+/g, "").trim();
+    const shuffle = (arr) => [...arr].sort(() => Math.random() - 0.5);
+
+    function parseWordList(text) {
+      return text
+        .split("\n")
+        .map((line) => line.trim())
+        .filter(Boolean)
+        .map((line) => {
+          const [clue, word] = line.split("|").map((v) => (v || "").trim());
+          return { clue, word };
+        })
+        .filter((r) => r.clue && r.word);
+    }
+
+    function parseManualGroups(text) {
+      return text
+        .split("\n")
+        .map((line) => line.trim())
+        .filter(Boolean)
+        .map((line) => line.split(/\s+/).filter(Boolean))
+        .filter((group) => group.length === 9 || group.length === 10);
+    }
+
+    function autoLetters(word) {
+      const unique = [...new Set(normalize(word).split(""))];
+      const target = Math.random() < 0.5 ? 9 : 10;
+      const pool = new Set(unique);
+      while (pool.size < target) {
+        pool.add(arabicAlphabet[Math.floor(Math.random() * arabicAlphabet.length)]);
+      }
+      return shuffle([...pool]).slice(0, target);
+    }
+
+    function chooseLetters(roundIndex, word) {
+      if (state.lettersMode === "manual" && state.manualGroups.length > 0) {
+        return state.manualGroups[roundIndex % state.manualGroups.length];
+      }
+      return autoLetters(word);
+    }
+
+    function renderKeyboard(container, team) {
+      container.innerHTML = "";
+      state.letters.forEach((letter) => {
+        const key = document.createElement("button");
+        key.className = "key";
+        key.textContent = letter;
+        key.onclick = () => {
+          if (!state.roundActive) return;
+          if (team === "A") state.answerA += letter;
+          else state.answerB += letter;
+          updateUI();
+        };
+        container.appendChild(key);
+      });
+    }
+
+    function updateUI() {
+      el.scoreA.textContent = state.scoreA;
+      el.scoreB.textContent = state.scoreB;
+      el.roundLabel.textContent = `الجولة ${state.round} / ${state.rounds.length}`;
+      el.timer.textContent = `⏳ ${state.timer}`;
+      el.flag.style.setProperty("--offset", `${state.ropeOffset}%`);
+      el.answerA.textContent = state.answerA || "—";
+      el.answerB.textContent = state.answerB || "—";
+      const groupText = `مجموعة الحروف الحالية (${state.letters.length}): ${state.letters.join(" ")}`;
+      el.activeGroup.textContent = groupText;
+      el.lettersA.textContent = groupText;
+      el.lettersB.textContent = groupText;
+    }
+
+    function finishRound(msg) {
+      state.roundActive = false;
+      clearInterval(state.timerId);
+      state.timerId = null;
+      el.globalMsg.textContent = msg;
+    }
+
+    function submitAnswer(team) {
+      if (!state.roundActive) return;
+      const answer = normalize(team === "A" ? state.answerA : state.answerB);
+      const correct = normalize(state.currentWord);
+      const myMsg = team === "A" ? el.teamMsgA : el.teamMsgB;
+      const otherMsg = team === "A" ? el.teamMsgB : el.teamMsgA;
+      if (!answer) {
+        myMsg.textContent = "اكتب الكلمة أولاً";
+        return;
+      }
+      if (answer === correct) {
+        if (team === "A") { state.scoreA += 1; state.ropeOffset -= 8; }
+        else { state.scoreB += 1; state.ropeOffset += 8; }
+        myMsg.textContent = "✅ صحيح";
+        otherMsg.textContent = "";
+        updateUI();
+        finishRound(`✅ ${team === "A" ? "الفريق الأزرق" : "الفريق الأحمر"} فاز بهذه الجولة`);
+      } else {
+        myMsg.textContent = "❌ حاول مرة أخرى";
+      }
+    }
+
+    function loadRound() {
+      if (state.round > state.rounds.length) {
+        const winner = state.scoreA === state.scoreB ? "تعادل رائع!" : state.scoreA > state.scoreB ? "الفريق الأزرق فاز!" : "الفريق الأحمر فاز!";
+        finishRound(`انتهت اللعبة 🎉 ${winner}`);
+        el.startRound.disabled = true;
+        el.nextRound.disabled = true;
+        return;
+      }
+
+      const current = state.rounds[state.round - 1];
+      state.currentWord = current.word;
+      state.currentClue = current.clue;
+      state.letters = chooseLetters(state.round - 1, state.currentWord);
+      state.answerA = "";
+      state.answerB = "";
+      state.timer = 25;
+      state.roundActive = false;
+      clearInterval(state.timerId);
+
+      el.promptA.textContent = `اكتب الكلمة: ${state.currentClue}`;
+      el.promptB.textContent = `اكتب الكلمة: ${state.currentClue}`;
+      el.teamMsgA.textContent = "";
+      el.teamMsgB.textContent = "";
+      el.globalMsg.textContent = "اضغط ابدأ الجولة";
+
+      renderKeyboard(el.keyboardA, "A");
+      renderKeyboard(el.keyboardB, "B");
+      updateUI();
+    }
+
+    function startRound() {
+      if (state.roundActive) return;
+      state.roundActive = true;
+      el.globalMsg.textContent = "ابدأوا الكتابة الآن";
+      clearInterval(state.timerId);
+      state.timerId = setInterval(() => {
+        state.timer -= 1;
+        el.timer.textContent = `⏳ ${state.timer}`;
+        if (state.timer <= 0) {
+          finishRound(`انتهى الوقت! الكلمة الصحيحة: ${state.currentWord}`);
+        }
+      }, 1000);
+    }
+
+    function applyTeacherConfig() {
+      const rounds = parseWordList(el.wordsInput.value);
+      const groups = parseManualGroups(el.lettersInput.value);
+      state.lettersMode = el.lettersMode.value;
+
+      if (!rounds.length) {
+        el.teacherMsg.textContent = "❌ يرجى إدخال كلمة واحدة على الأقل بصيغة: المعنى|الكلمة";
+        return;
+      }
+      if (state.lettersMode === "manual" && !groups.length) {
+        el.teacherMsg.textContent = "❌ في الوضع اليدوي يجب إدخال مجموعة حروف واحدة على الأقل (9 أو 10 أحرف).";
+        return;
+      }
+
+      state.rounds = rounds;
+      state.manualGroups = groups;
+      state.round = 1;
+      state.scoreA = 0;
+      state.scoreB = 0;
+      state.ropeOffset = 0;
+      el.startRound.disabled = false;
+      el.nextRound.disabled = false;
+      el.teacherMsg.textContent = `✅ تم تطبيق الإعدادات: ${rounds.length} جولات، ${groups.length} مجموعات حروف.`;
+      loadRound();
+    }
+
+    function resetTeacherConfig() {
+      el.wordsInput.value = defaults.wordsText;
+      el.lettersInput.value = defaults.lettersText;
+      el.lettersMode.value = "manual";
+      applyTeacherConfig();
+    }
+
+    document.querySelectorAll(".team-controls button").forEach((btn) => {
+      btn.onclick = () => {
+        const { team, action } = btn.dataset;
+        if (!state.roundActive && action !== "submit") return;
+        if (action === "submit") submitAnswer(team);
+        if (action === "back") {
+          if (team === "A") state.answerA = state.answerA.slice(0, -1);
+          else state.answerB = state.answerB.slice(0, -1);
+          updateUI();
+        }
+        if (action === "clear") {
+          if (team === "A") state.answerA = "";
+          else state.answerB = "";
+          updateUI();
+        }
+      };
+    });
+
+    document.getElementById("applyConfig").onclick = applyTeacherConfig;
+    document.getElementById("resetConfig").onclick = resetTeacherConfig;
+    document.getElementById("startRound").onclick = startRound;
+    document.getElementById("nextRound").onclick = () => {
+      if (state.roundActive) return;
+      state.round += 1;
+      loadRound();
+    };
+    document.getElementById("resetGame").onclick = () => {
+      clearInterval(state.timerId);
+      state.round = 1;
+      state.scoreA = 0;
+      state.scoreB = 0;
+      state.ropeOffset = 0;
+      el.startRound.disabled = false;
+      el.nextRound.disabled = false;
+      loadRound();
+    };
+
+    applyTeacherConfig();
+  </script>
+</body>
+</html>
