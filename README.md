@@ -1,20 +1,22 @@
-# Tug of War Arabic Spelling Game (Teacher Dashboard)
+# Tug of War Arabic Spelling Game (React + Teacher Dashboard)
 
-This is a browser-based Arabic spelling tug-of-war game with a built-in **teacher dashboard**.
+This app is a browser-based Arabic spelling tug-of-war game with a built-in teacher dashboard.
 
-## Teacher dashboard features
-- Add/edit the word list from one place using this format per line:
-  - `المعنى|الكلمة`
-- Add/edit letter groups used in rounds (one group per line).
-- Each letter group must contain **9 or 10 letters** (space-separated).
-- Choose letter mode:
-  - **Manual**: use teacher-defined letter groups.
-  - **Auto**: generate 9–10 letters automatically per round.
+## Features
+- Teacher dashboard to add/edit/remove rounds.
+- Per-round setup includes:
+  - target Arabic word,
+  - prompt/description,
+  - letter group constrained to 9–10 letters.
+- Two-player tug-of-war gameplay with timer, score tracking, and round feedback.
 
-## Gameplay
-- Two teams type answers using on-screen Arabic keyboards.
-- Correct answer wins the round and moves the rope toward that team.
-- Use Start / Next Round / Reset controls during class play.
+## Tech stack
+- React 18 (UMD via CDN)
+- ReactDOM 18 (UMD via CDN)
+- Babel Standalone (in-browser JSX transform)
+- Tailwind CSS (CDN)
+
+> Note: This version depends on CDN assets, so internet access is needed when loading the page.
 
 ## Run locally
 ```bash
